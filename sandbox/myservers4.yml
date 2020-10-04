@@ -1,0 +1,90 @@
+Description: >
+      Randall Granier / Udacity Course
+      PROJECT TEST:  Single EC2 in a public subnet
+      ./create.sh TestStack4 myservers4.yml myserverparams.json
+      ./update.sh TestStack4 myservers4.yml myserverparams.json
+
+Parameters:
+
+  EnvironmentName:
+      Description: The environment name for this stack.
+      Type: String
+
+Resources:
+  ProfileWithRolesForOurApp:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - UdacityGranierEC2S3
+
+  TestSecGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow SSH and HTTP to server
+      VpcId: vpc-187fc27d
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+      - IpProtocol: tcp
+        FromPort: 0
+        ToPort: 65535
+        CidrIp: 0.0.0.0/0
+
+  MyEc2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-003634241a8fcdec0
+      IamInstanceProfile: !Ref ProfileWithRolesForOurApp
+      KeyName: "GranierConsulting"
+      UserData:
+          'Fn::Base64':
+              !Sub |
+                #!/bin/bash
+                export DEBIAN_FRONTEND=noninteractive
+                apt-get update -y
+                apt-get install unzip awscli -y
+                apt-get install apache2 -y
+                systemctl start apache2.service
+                cd /var/www/html
+                cp index.html index.html.orig
+                aws s3 cp s3://granier-webdemo/MySimpleWeb.zip .
+                unzip -o MySimpleWeb.zip
+                echo "$(date) Success building WebApp Launch Config" >> /tmp/status.txt
+      SecurityGroupIds:
+        - !GetAtt TestSecGroup.GroupId
+      #AssociatePublicIpAddress: False
+      BlockDeviceMappings:
+      - DeviceName: "/dev/sdk"
+        Ebs:
+          VolumeSize: '10'
+      Tags:
+        - Key: Name
+          Value: Test4InstanceName
+        - Key: Type
+          Value: Test4InstanceType
+  MyEIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      InstanceId: !Ref MyEc2Instance
+
+Outputs:
+    MyEc2Instance:
+      Description: The Instance Value
+      Value: !Ref MyEc2Instance
+      Export:
+        Name: !Sub ${EnvironmentName}-MYEC2
+
+    # How do we get the public IP?
+    #MyEc2InstancePublicIP:
+    #  Description: The Assigned Public IP Value
+    #  Value: !GetAtt MyEc2Instance.DNSName
+    #  Export:
+    #    Name: !Sub ${EnvironmentName}-MYIP

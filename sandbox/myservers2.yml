@@ -1,0 +1,30 @@
+Description: >
+      Randall Granier / Udacity Course
+      PROJECT X:  Single EC2
+      ./create.sh TestStack2 myservers2.yml myserverparams2.json
+      ./update.sh TestStack2 myservers2.yml myserverparams2.json
+
+Parameters:
+
+  EnvironmentName:
+      Description: The environment name for this stack.
+      Type: String
+
+Resources:
+  ProfileWithRolesForOurApp:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - UdacityGranierEC2S3
+
+  Ec2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-003634241a8fcdec0
+      KeyName: "GranierConsulting"
+      Tags:
+        - Key: Name
+          Value: My EC2 Instance
+        - Key: Type
+          Value: Test 2 Instance
