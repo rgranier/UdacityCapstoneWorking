@@ -31,6 +31,10 @@ Resources:
         FromPort: 80
         ToPort: 80
         CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 8080
+        ToPort: 8080
+        CidrIp: 0.0.0.0/0
       SecurityGroupEgress:
       - IpProtocol: tcp
         FromPort: 0
@@ -44,6 +48,7 @@ Resources:
       ImageId: ami-003634241a8fcdec0
       IamInstanceProfile: !Ref ProfileWithRolesForOurApp
       KeyName: "GranierConsulting"
+      AvailabilityZone: "us-west-2a"
       UserData:
           'Fn::Base64':
               !Sub |
