@@ -24,12 +24,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: myk8ms2-svc
+  name: myk8ms-svc
   labels:
     env: dev
 spec:
   type: LoadBalancer
   ports:
-  - port: 81
+  - port: 80
   selector:
     env: dev
