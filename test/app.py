@@ -8,7 +8,7 @@ LOG.setLevel(logging.INFO)
 
 @app.route("/")
 def home():
-    html = "<h1>CAPSTONE</h2><p>Test home page</p>"
+    html = "<h1>CAPSTONE</h2><br><p>Test home page</p>"
     mydata = 'Some log info.'
     LOG.info(f"My output: {mydata}")
     return html.format(format)

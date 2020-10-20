@@ -4,12 +4,6 @@ FROM python:3.7.3-stretch
 # Create a working directory
 WORKDIR /app
 
-## Step 2:
-# Copy source code to working directory
-# We don't actually have to add the output directories because we are not Logging
-# directly to the files, but rather cutting and  pasting in our project.
-#ADD output_txt_files /app/output_txt_files
-COPY model_data/*  /app/model_data/
 COPY app.py /app/
 COPY requirements.txt /app/
 
